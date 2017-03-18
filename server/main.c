@@ -14,8 +14,9 @@
 #define LISTENQ 5
 
 int main(int argc, char **argv) {
-    int listenfd = -1;
-    struct sockaddr_in6	servaddr;
+    int listenfd, connfd = -1;
+    socklen_t cliaddr_size;
+    struct sockaddr_in6	servaddr, cliaddr;
 
     if(argc != 2) {
       fprintf(stderr, "Start server with command: ./main <port>\n");
@@ -49,5 +50,28 @@ int main(int argc, char **argv) {
 
     printf("Server listening port %s.\n", argv[1]);
     printf("Press CTRL + C to exit.\n");
+
+    // wait connections forever
+    for ( ; ; ) {
+
+      // Odotetaan sisääntulevaa yhteyttä, ei pitäisi
+  		// blokata, koska FD_ISSET
+  		// Yhteydenottajan IP-osoite ja portti otetaan talteen
+  		// cliaddr-rakenteeseen
+      if ((connfd = accept(listenfd, (struct sockaddr *) &cliaddr,
+  				     &cliaddr_size)) < 0) {
+  		    perror("accept");
+  		    return -1;
+  		}
+
+      // print client address and port
+      char buff[80];
+      printf("connection from %s, port %d\n",
+  		       inet_ntop(AF_INET6, &cliaddr.sin6_addr,
+  				 buff, sizeof(buff)),
+  		       ntohs(cliaddr.sin6_port));
+
+
+    }
 
 };
