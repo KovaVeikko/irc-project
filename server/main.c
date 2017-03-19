@@ -2,8 +2,6 @@
 
 #include "headers/connect.h"
 
-#define LISTENQ 5
-
 int main(int argc, char **argv) {
     int listenfd, connfd = -1;
     socklen_t cliaddr_size;
@@ -14,7 +12,7 @@ int main(int argc, char **argv) {
       return -1;
     };
 
-    // Create socket
+    // Create a master socket
     if((listenfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
       perror("socket");
       return -1;
@@ -26,14 +24,14 @@ int main(int argc, char **argv) {
   	servaddr.sin6_addr	= in6addr_any;
   	servaddr.sin6_port      = htons(atoi(argv[1]));
 
-    // bind() local address
+    // bind() the socket to localhost (given port)
     if (bind(listenfd, (struct sockaddr *) &servaddr,
   		 sizeof(servaddr)) < 0) {
   		perror("bind");
   		return -1;
   	}
 
-    // listen() connections
+    // listen() max LISTENQ connections
     if(listen(listenfd, LISTENQ) == -1) {
         perror("listen");
         return -1;
@@ -47,6 +45,7 @@ int main(int argc, char **argv) {
 
     // wait connections forever...
     for ( ; ; ) {
+
       // save client address and port into cliaddr struct
       if ((connfd = accept(listenfd, (struct sockaddr *) &cliaddr,
   				     &cliaddr_size)) < 0) {
@@ -63,9 +62,11 @@ int main(int argc, char **argv) {
         connfd
       );
 
-      // receive messages from and respond to the connected client
-      connect_client(clients_stack -> content);
+      // receive messages from and respond to the connected client in a new thread
+      pthread_create(&(clients_stack -> content -> thread), NULL, (void * (*) (void *)) client_thread, clients_stack -> content);
 
     }
+
+
 
 };

@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <pthread.h>
 
 typedef struct Client {
   int id;
   char *name;
-  int socket;
   char *hostname;
+  int socket;
+  pthread_t thread;
 } Client;
 
 typedef struct Node {

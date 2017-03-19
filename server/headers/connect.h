@@ -14,8 +14,9 @@
 
 #include "client.h"
 
+#define LISTENQ 5
 #define MAXLINE 1024
 
-void connect_client(Client *);
+void client_thread(Client *);
 
 #endif
