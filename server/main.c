@@ -1,15 +1,6 @@
 // Simple IRC server
 
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <time.h>
-#include <strings.h>
-#include <unistd.h>
-#include <string.h>
+#include "headers/connect.h"
 
 #define LISTENQ 5
 
@@ -42,7 +33,7 @@ int main(int argc, char **argv) {
   		return -1;
   	}
 
-    // listen() connections from the world
+    // listen() connections
     if(listen(listenfd, LISTENQ) == -1) {
         perror("listen");
         return -1;
@@ -51,26 +42,29 @@ int main(int argc, char **argv) {
     printf("Server listening port %s.\n", argv[1]);
     printf("Press CTRL + C to exit.\n");
 
-    // wait connections forever
-    for ( ; ; ) {
+    // initialise an empty list of clients
+    Node *clients_stack = new_clients_stack();
 
-      // Odotetaan sisääntulevaa yhteyttä, ei pitäisi
-  		// blokata, koska FD_ISSET
-  		// Yhteydenottajan IP-osoite ja portti otetaan talteen
-  		// cliaddr-rakenteeseen
+    // wait connections forever...
+    for ( ; ; ) {
+      // save client address and port into cliaddr struct
       if ((connfd = accept(listenfd, (struct sockaddr *) &cliaddr,
   				     &cliaddr_size)) < 0) {
   		    perror("accept");
   		    return -1;
   		}
 
-      // print client address and port
+      // add connection to stack
       char buff[80];
-      printf("connection from %s, port %d\n",
-  		       inet_ntop(AF_INET6, &cliaddr.sin6_addr,
-  				 buff, sizeof(buff)),
-  		       ntohs(cliaddr.sin6_port));
+      clients_stack = add_client(
+        clients_stack,
+        "dummy name",
+        inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
+        connfd
+      );
 
+      // respond to the connected client
+      connect_client(clients_stack -> content);
 
     }
 
