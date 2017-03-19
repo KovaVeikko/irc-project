@@ -64,7 +64,6 @@ int main(int argc, char **argv) {
 
       // receive messages from and respond to the connected client in a new thread
       pthread_create(&(clients_stack -> content -> thread), NULL, (void * (*) (void *)) client_thread, clients_stack -> content);
-
     }
 
 

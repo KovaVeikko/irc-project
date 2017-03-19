@@ -12,7 +12,7 @@ void client_thread(Client *client) {
 
   while (n > 0) {
     received_message[n] = 0;
-    printf("%s\n", received_message);
+    printf("%s", received_message);
     n = read(client -> socket, received_message, MAXLINE);
 
   }
