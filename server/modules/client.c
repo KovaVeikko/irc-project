@@ -27,6 +27,7 @@ Node *add_client(Node *stack, const char *name, const char *hostname, int socket
   return new_node;
 };
 
+/* list all connected clients */
 int print_clients(Node *stack) {
   if (stack == NULL) {
     return -1;

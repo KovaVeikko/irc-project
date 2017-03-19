@@ -14,6 +14,8 @@
 
 #include "client.h"
 
+#define MAXLINE 1024
+
 void connect_client(Client *);
 
 #endif

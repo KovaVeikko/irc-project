@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
         connfd
       );
 
-      // respond to the connected client
+      // receive messages from and respond to the connected client
       connect_client(clients_stack -> content);
 
     }
