@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "client.h"
+#include "commands.h"
 
 #define LISTENQ 5
 #define MAXLINE 1024

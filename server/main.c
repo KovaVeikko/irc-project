@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
       return -1;
     };
 
-    // Choose port to listen and accept connections from any address
+    // Choose port to listen to and accept connections from any address
     bzero(&servaddr, sizeof(servaddr));
   	servaddr.sin6_family    = AF_INET6;
   	servaddr.sin6_addr	= in6addr_any;
