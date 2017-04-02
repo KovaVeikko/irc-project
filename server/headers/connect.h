@@ -14,9 +14,12 @@
 
 #include "client.h"
 #include "commands.h"
+#include "command_handlers.h"
 
 #define LISTENQ 5
 #define MAXLINE 1024
+
+Node *clients_stack;
 
 void client_thread(Client *);
 

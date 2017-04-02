@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     printf("Press CTRL + C to exit.\n");
 
     // initialise an empty list of clients
-    Node *clients_stack = new_clients_stack();
+    clients_stack = new_clients_stack();
 
     // wait connections forever...
     for ( ; ; ) {
@@ -61,8 +61,6 @@ int main(int argc, char **argv) {
         inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
         connfd
       );
-
-      print_clients(clients_stack);
 
       // receive messages from and respond to the connected client in a new thread
       pthread_create(&(clients_stack -> content -> thread), NULL, (void * (*) (void *)) client_thread, clients_stack -> content);
