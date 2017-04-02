@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         return -1;
     };
 
-    printf("Server listening port %s.\n", argv[1]);
+    printf("Server listening to port %s.\n", argv[1]);
     printf("Press CTRL + C to exit.\n");
 
     // initialise an empty list of clients
@@ -61,6 +61,8 @@ int main(int argc, char **argv) {
         inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
         connfd
       );
+
+      print_clients(clients_stack);
 
       // receive messages from and respond to the connected client in a new thread
       pthread_create(&(clients_stack -> content -> thread), NULL, (void * (*) (void *)) client_thread, clients_stack -> content);
