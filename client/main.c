@@ -24,11 +24,13 @@ void error(char *msg) {
 int main(int argc, char **argv) {
     // define variables
     int sockfd, portno, n;
-    char buf[BUFSIZE];
+    char buf[BUFSIZE], msg[BUFSIZE];;
+
     struct sockaddr_in servaddr; // tietorakenne, joka esittää osoitetta
 
+    // Nämä myöhemmin DNS-kyselyllä
     const char *address = "127.0.0.1";
-    //portno = 9000;
+    portno = 9000;
 
     // Luodaan pistoke, joka käyttää IPv4 - protokollaa (AF_INET)
     // ja TCP-protokollaa (SOCK_STREAM)
@@ -43,7 +45,7 @@ int main(int argc, char **argv) {
     // ja määritellään palvelimen portti johon tullaan ottamaan yhteyttä
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port   = htons(9000);
+    servaddr.sin_port   = htons(portno);
 
 
     // Muutetaan ASCII-muotoinen IP-osoitte binääriseksi.
@@ -60,27 +62,40 @@ int main(int argc, char **argv) {
         error("connect error");
         return 1;
     }
-        char msg[BUFSIZE];
-    while(1)
-    {
-        printf("Enter msg:");
-        scanf("%s" , msg);
 
-        if( send(sockfd , msg , strlen(msg) , 0) < 0)
-        {
-            puts("Send failed");
-            return 1;
-        }
-         // server reply
-        if( recv(sockfd, buf , BUFSIZE , 0) < 0)
-        {
-            puts("Recv failed");
-            break;
-        }
-        puts("Echo: ");
-        puts(buf);
+    // server reply
+   if( recv(sockfd, buf , BUFSIZE , 0) < 0)
+   {
+       puts("Recv failed");
+       return 1;
+   }
+   puts(buf);
+   printf("toimii");
+
+// Viestien lähetys
+    // Tähän for loop viesteille/vastauksille
+    int i = 0;
+
+    while (i != 1) {
+    const char *tosend = "Jee toimii\n";
+    size_t paluuarvo;
+    paluuarvo = write(sockfd, tosend, strlen(tosend));
+
+    if(paluuarvo < 0) {
+      perror("writing error");
+      return 1;
     }
-        close (sockfd);
-        return 0;
+
+    char vastaus[160];
+    memset(vastaus, 0, 160); // täytetään puskuri nollilla
+    // Lue palvelimen vastaus yllä määriteltyyn puskuriin, jossa on tilaa
+    // 160 merkille.
+    read(sockfd, vastaus, 160);
+
+    vastaus[159] = 0;  // varmistetaan että lopussa on nolla
+    printf("%s\n", vastaus);  // tulostetaan luettu teksti ruudulle
+   scanf("Give i: %i\n", &i );
+
 
   }
+}
