@@ -8,5 +8,5 @@ void handle_nick(Client *client, Node *clients, char *name) {
   char *message = malloc(strlen(str) + strlen(name) + sizeof(char));
   strcat(message, str);
   strcat(message, name);
-  send_message(client, message);
+  server_message(client, message);
 }

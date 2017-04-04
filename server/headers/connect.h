@@ -15,6 +15,7 @@
 #include "client.h"
 #include "commands.h"
 #include "command_handlers.h"
+#include "utility.h"
 
 #define LISTENQ 5
 #define MAXLINE 1024

@@ -2,6 +2,8 @@
 
 void client_thread(Client *client) {
   printf("Client %s connected\n", client -> hostname);
+  
+  welcome_message(client);
 
   // receive message from client
   char received_message[MAXLINE + 1];

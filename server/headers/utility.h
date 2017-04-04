@@ -7,6 +7,7 @@
 
 #include "../headers/client.h"
 
-void send_message(Client *, char *);
+void welcome_message(Client *);
+void server_message(Client *, char *);
 
 #endif
