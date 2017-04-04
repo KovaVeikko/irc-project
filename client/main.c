@@ -62,25 +62,43 @@ int main(int argc, char **argv) {
         error("connect error");
         return 1;
     }
+    puts("Connected\n");
 
-    // server reply
-   if( recv(sockfd, buf , BUFSIZE , 0) < 0)
-   {
-       puts("Recv failed");
-       return 1;
-   }
-   puts(buf);
-   printf("toimii");
 
 // Viestien lähetys
     // Tähän for loop viesteille/vastauksille
+    while(1)
+    {
+    printf("Please enter message: ");
+    bzero(buf, BUFSIZE);
+    fgets(buf, BUFSIZE, stdin);
+
+    /* send the message line to the server */
+    n = write(sockfd, buf, strlen(buf));
+    if (n < 0)
+      error("ERROR writing to socket");
+
+
+    /* print the server's reply */
+    bzero(buf, BUFSIZE);
+    n = read(sockfd, buf, BUFSIZE);
+    if (n < 0)
+      error("ERROR reading from socket");
+    printf("Echo from server: %s\n", buf);
+    }
+
+    close(sockfd);
+    return 0;
+
+
+    /*
     int i = 0;
 
     while (i != 1) {
     const char *tosend = "Jee toimii\n";
     size_t paluuarvo;
     paluuarvo = write(sockfd, tosend, strlen(tosend));
-
+    printf("ho"\n", );
     if(paluuarvo < 0) {
       perror("writing error");
       return 1;
@@ -94,8 +112,9 @@ int main(int argc, char **argv) {
 
     vastaus[159] = 0;  // varmistetaan että lopussa on nolla
     printf("%s\n", vastaus);  // tulostetaan luettu teksti ruudulle
-   scanf("Give i: %i\n", &i );
+    scanf("Give i: %i\n", &i );
 
 
   }
+  */
 }
