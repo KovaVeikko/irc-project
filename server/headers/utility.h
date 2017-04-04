@@ -9,5 +9,6 @@
 
 void welcome_message(Client *);
 void server_message(Client *, char *);
+void send_message(Client *, Node *, char *);
 
 #endif
