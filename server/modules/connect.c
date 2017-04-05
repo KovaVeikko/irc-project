@@ -26,6 +26,9 @@ void client_thread(Client *client) {
       if(strcmp(cmd, LIST) == 0) {
         handle_list(client);
       }
+      if(strcmp(cmd, JOIN) == 0) {
+        handle_join(client, strtok(NULL, " \t\r\n/"));
+      }
       else {
         send_message(client, clients_stack, received_message);
       }
