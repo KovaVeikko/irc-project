@@ -16,7 +16,7 @@ Send message from server to client
 */
 void server_message(Client *client, char *message) {
   char *prefix = "--- ";
-  char *end_char = " ---\n";
+  char *end_char = "\n";
   char *line = malloc(strlen(prefix) + strlen(message) + 2 * sizeof(char));
   strcpy(line, prefix);
   strcat(line, message);
