@@ -9,28 +9,47 @@
 
 #include <sys/types.h>
 #include <netdb.h>
-
+#include<errno.h> //For errno - the error number
 
 #define BUFSIZE 1024
 
-/*
- * error - wrapper for perror
- */
+int hostname_to_ip(char *  , char *);
+
 void error(char *msg) {
     perror(msg);
     exit(0);
 }
 
-int main(int argc, char **argv) {
-    // define variables
+int main(int argc , char *argv[]) {
     int sockfd, portno, n;
-    char buf[BUFSIZE], msg[BUFSIZE];;
+    char buf[BUFSIZE], msg[BUFSIZE];
+
+    if(argc != 3) {
+      fprintf(stderr, "Aloita kirjoittamalla: %s <hostname> <portnumber>\n", argv[0]);
+      return -1;
+
+    }
+    // IP
+    char *hostname = argv[1];
+    char ip[100];
+
+    //Porttinumero
+    portno = atoi(argv[2]);
+
+
+    hostname_to_ip(hostname , ip);
+    printf("%s resolved to %s\n" , hostname , ip);
+
+
+    // define variables
+
 
     struct sockaddr_in servaddr; // tietorakenne, joka esittää osoitetta
 
     // Nämä myöhemmin DNS-kyselyllä
-    const char *address = "127.0.0.1";
-    portno = 9000;
+
+    struct hostent *gethostbyname(const char *address);
+    const char *address = ip;
 
     // Luodaan pistoke, joka käyttää IPv4 - protokollaa (AF_INET)
     // ja TCP-protokollaa (SOCK_STREAM)
@@ -69,22 +88,26 @@ int main(int argc, char **argv) {
     // Tähän for loop viesteille/vastauksille
     while(1)
     {
-    printf("Please enter message: ");
     bzero(buf, BUFSIZE);
     fgets(buf, BUFSIZE, stdin);
 
+    n = read(sockfd, buf, BUFSIZE);
+    if (n < 0)
+      error("ERROR reading from socket");
+    printf("%s\n", buf);
+
+    printf("Write message: ");
+    bzero(msg, BUFSIZE);
+    fgets(msg, BUFSIZE, stdin);
+
     /* send the message line to the server */
-    n = write(sockfd, buf, strlen(buf));
+    n = write(sockfd, msg, strlen(msg));
     if (n < 0)
       error("ERROR writing to socket");
 
 
     /* print the server's reply */
-    bzero(buf, BUFSIZE);
-    n = read(sockfd, buf, BUFSIZE);
-    if (n < 0)
-      error("ERROR reading from socket");
-    printf("Echo from server: %s\n", buf);
+
     }
 
     close(sockfd);
@@ -117,4 +140,32 @@ int main(int argc, char **argv) {
 
   }
   */
+}
+
+
+// IP HAKEMINEN
+
+int hostname_to_ip(char * hostname , char* ip)
+{
+    struct hostent *he;
+    struct in_addr **addr_list;
+    int i;
+
+    if ( (he = gethostbyname( hostname ) ) == NULL)
+    {
+        // get the host info
+        herror("gethostbyname");
+        return 1;
+    }
+
+    addr_list = (struct in_addr **) he->h_addr_list;
+
+    for(i = 0; addr_list[i] != NULL; i++)
+    {
+        //Return the first one;
+        strcpy(ip , inet_ntoa(*addr_list[i]) );
+        return 0;
+    }
+
+    return 1;
 }
