@@ -23,6 +23,9 @@ void client_thread(Client *client) {
       if(strcmp(cmd, USER) == 0) {
         handle_user(client);
       }
+      if(strcmp(cmd, LIST) == 0) {
+        handle_list(client);
+      }
       else {
         send_message(client, clients_stack, received_message);
       }

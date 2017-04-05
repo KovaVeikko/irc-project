@@ -10,6 +10,7 @@ typedef struct Client {
   int id;
   char *name;
   char *hostname;
+  char *channel;
   int socket;
   pthread_t thread;
 } Client;
@@ -21,7 +22,7 @@ typedef struct Node {
 } Node;
 
 Node *new_clients_stack();
-Node *add_client(Node *, const char *, const char *, int);
+Node *add_client(Node *, const char *, const char *, const char *, int);
 int print_clients(Node *);
 
 #endif
