@@ -16,3 +16,8 @@ void handle_nick(Client *client, Node *clients, char *name) {
   server_message(client, message);
   free(message);
 }
+
+void handle_user(Client *client) {
+    char *message = "Hello! Welcome to chat.";
+    server_message(client, message);
+};

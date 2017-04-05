@@ -3,8 +3,6 @@
 void client_thread(Client *client) {
   printf("Client %s connected\n", client -> hostname);
 
-  welcome_message(client);
-
   // receive message from client
   char received_message[MAXLINE + 1];
   char *msg = malloc(MAXLINE + 1);
@@ -21,7 +19,10 @@ void client_thread(Client *client) {
       printf("%s sent: \"%s\"\n", client -> name, cmd);
       if(strcmp(cmd, NICK) == 0) {
         handle_nick(client, clients_stack, strtok(NULL, " \t\r\n/"));
-      } 
+      }
+      if(strcmp(cmd, USER) == 0) {
+        handle_user(client);
+      }
       else {
         send_message(client, clients_stack, received_message);
       }

@@ -4,5 +4,6 @@
 #include "../headers/client.h"
 
 void handle_nick(Client *, Node *, char *);
+void handle_user(Client *);
 
 #endif
