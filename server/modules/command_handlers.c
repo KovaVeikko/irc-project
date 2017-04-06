@@ -1,12 +1,19 @@
 #include "../headers/client.h"
 #include "../headers/utility.h"
 #include "../headers/command_handlers.h"
+#include "../headers/config.h"
 
-char *CHANNELS[] = {"Cellari", "HappyGarden"};
+char CHANNELS[][20] = {"Cellari", "HappyGarden"};
 
-void handle_user(Client *client) {
-    char *message = "Hello! Welcome to chat.";
-    server_message(client, message);
+void handle_user(Client *client, char *username) {
+    if (username == NULL) {
+      char *error = "ERROR: No username parameter given";
+      server_message(client, error);
+      return;
+    }
+    client -> name = realloc(client -> name, (strlen(username) + 1) * sizeof(char));
+    strcpy(client -> name, username);
+    server_message(client, CONNECT_MESSAGE);
 };
 
 void handle_nick(Client *client, Node *clients, char *name) {
@@ -15,23 +22,26 @@ void handle_nick(Client *client, Node *clients, char *name) {
     server_message(client, error);
     return;
   }
-  client -> name = realloc(client -> name, (strlen(name) + 1) * sizeof(char));
-  strcpy(client -> name, name);
   char *str = "You are now known as ";
   char *message = malloc(strlen(str) + strlen(name) + sizeof(char));
   strcat(message, str);
   strcat(message, name);
   server_message(client, message);
   free(message);
+  client -> name = realloc(client -> name, (strlen(name) + 1) * sizeof(char));
+  strcpy(client -> name, name);
 }
 
 void handle_list(Client *client) {
   char *str = "Channels -> \n";
   char *end = "<- End of list";
+  char *prefix = "#";
   char *br = "\n";
   char *message = malloc(2048);
+  memset(message, 0, 2048);
   strcat(message, str);
   for(int i = 0; i < sizeof(CHANNELS) / sizeof(CHANNELS[0]); i++) {
+    strcat(message, prefix);
     strcat(message, CHANNELS[i]);
     strcat(message, br);
   }
@@ -46,7 +56,12 @@ void handle_join(Client *client, char *channel) {
     server_message(client, error);
     return;
   }
-  char *str = "You are now on channel ";
+  if (strlen(channel) > 20) {
+    char *error = "ERROR: Channel name too long. Max 20 char.";
+    server_message(client, error);
+    return;
+  }
+  char *str = "You are now on channel #";
   char *message = malloc(strlen(str) + (strlen(channel) + 1) * sizeof(char));
   strcat(message, str);
   strcat(message, channel);

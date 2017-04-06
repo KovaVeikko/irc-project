@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
       char buff[80];
       clients_stack = add_client(
         clients_stack,
-        "NONAME",
+        DEFAULT_NAME,
         inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
-        "NOCHANNEL",
+        DEFAULT_CHANNEL,
         connfd
       );
 

@@ -21,7 +21,7 @@ void client_thread(Client *client) {
         handle_nick(client, clients_stack, strtok(NULL, " \t\r\n/"));
       }
       if(strcmp(cmd, USER) == 0) {
-        handle_user(client);
+        handle_user(client, strtok(NULL, " \t\r\n/"));
       }
       if(strcmp(cmd, LIST) == 0) {
         handle_list(client);
