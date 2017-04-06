@@ -20,14 +20,14 @@ void client_thread(Client *client) {
       if(strcmp(cmd, NICK) == 0) {
         handle_nick(client, clients_stack, strtok(NULL, " \t\r\n/"));
       }
-      if(strcmp(cmd, USER) == 0) {
+      else if(strcmp(cmd, USER) == 0) {
         handle_user(client, strtok(NULL, " \t\r\n/"));
       }
-      if(strcmp(cmd, LIST) == 0) {
+      else if(strcmp(cmd, LIST) == 0) {
         handle_list(client);
       }
-      if(strcmp(cmd, JOIN) == 0) {
-        handle_join(client, strtok(NULL, " \t\r\n/"));
+      else if(strcmp(cmd, JOIN) == 0) {
+        handle_join(client, clients_stack, strtok(NULL, " \t\r\n/"));
       }
       else {
         send_message(client, clients_stack, received_message);

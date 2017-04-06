@@ -10,5 +10,6 @@
 void welcome_message(Client *);
 void server_message(Client *, char *);
 void send_message(Client *, Node *, char *);
+char *list_clients_on_channel(Node *, char *, char *);
 
 #endif

@@ -43,3 +43,20 @@ void send_message(Client *sender, Node *clients, char *message) {
   }
   free(line);
 }
+
+/*
+Return list of all clients in the given channel as a string
+*/
+char *list_clients_on_channel(Node *clients_stack, char *channel, char *str) {
+  struct Node *stack = clients_stack;
+  char *br = "\n";
+  while (stack -> prev) {
+    if (strcmp(stack -> content -> channel, channel) == 0) {
+      str = realloc(str, (strlen(str) + strlen(br) + strlen(stack -> content -> name) + 1) * sizeof(char));
+      strcat(str, br);
+      strcat(str, stack -> content -> name);
+    }
+    stack = stack -> prev;
+  }
+  return str;
+}
