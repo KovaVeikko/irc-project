@@ -6,7 +6,7 @@
 
 char CHANNELS[][20] = {"Cellari", "HappyGarden"};
 
-Channel CHANNELS2[][sizeof(Channel)];
+// Channel CHANNELS2[][sizeof(Channel)];
 
 void handle_user(Client *client, char *username) {
     if (username == NULL) {

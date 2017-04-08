@@ -4,5 +4,7 @@
 extern char *CONNECT_MESSAGE;
 extern char *DEFAULT_NAME;
 extern char *DEFAULT_CHANNEL;
+extern char INITIAL_CHANNELS[][20];
+extern int LEN_INITIAL_CHANNELS;
 
 #endif

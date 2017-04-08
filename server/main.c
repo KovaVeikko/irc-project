@@ -43,6 +43,14 @@ int main(int argc, char **argv) {
     // initialise an empty list of clients
     clients_stack = new_clients_stack();
 
+    // initialise an empty list of channels
+    channels = new_channel_list();
+
+    // create initial channels
+    for(int i = 0; i < LEN_INITIAL_CHANNELS; i++) {
+      add_channel(channels, new_channel(INITIAL_CHANNELS[i]));
+    }
+
     // wait connections forever...
     for ( ; ; ) {
 
@@ -59,7 +67,7 @@ int main(int argc, char **argv) {
         clients_stack,
         DEFAULT_NAME,
         inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
-        DEFAULT_CHANNEL,
+        channels[0] -> name,
         connfd
       );
 

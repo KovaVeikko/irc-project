@@ -22,6 +22,7 @@ typedef struct Node {
 } Node;
 
 Node *new_clients_stack();
+Node *add_node(Node *);
 Node *add_client(Node *, const char *, const char *, const char *, int);
 int print_clients(Node *);
 

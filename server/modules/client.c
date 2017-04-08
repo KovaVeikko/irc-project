@@ -11,11 +11,17 @@ Node *new_clients_stack() {
 };
 
 /* Adds a new Node to the stack */
-Node *add_client(Node *stack, const char *name, const char *hostname, const char *channel, int socket) {
+Node *add_node(Node *stack) {
   Node *new_node = malloc(sizeof(Node));
   new_node -> next = NULL;
   new_node -> prev = stack;
   stack -> next = new_node;
+  return new_node;
+}
+
+/* Creates a new Client and adds to the stack */
+Node *add_client(Node *stack, const char *name, const char *hostname, const char *channel, int socket) {
+  Node *new_node = add_node(stack);
   Client *client = malloc(sizeof(Client));
   client -> id = stack -> content -> id + 1;
   client -> name = malloc(strlen(name) * sizeof(char) + 1);

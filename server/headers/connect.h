@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "client.h"
+#include "channel.h"
 #include "commands.h"
 #include "command_handlers.h"
 #include "utility.h"
@@ -22,6 +23,7 @@
 #define MAXLINE 1024
 
 Node *clients_stack;
+Channel **channels;
 
 void client_thread(Client *);
 

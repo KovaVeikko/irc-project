@@ -13,4 +13,10 @@ typedef struct Channel {
 } Channel;
 
 
+Channel **new_channel_list();
+Channel *new_channel(char *);
+void add_channel(Channel **, Channel *);
+Channel *join_client(Channel *, Client *);
+
+
 #endif
