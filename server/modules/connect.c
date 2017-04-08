@@ -16,7 +16,7 @@ void client_thread(Client *client) {
     msg = strcpy(msg, received_message);
     cmd = strtok(msg, " \t\r\n/");
     while(cmd != NULL) {
-      printf("%s sent: \"%s\"\n", client -> name, cmd);
+      //printf("%s sent: \"%s\"\n", client -> name, cmd);
       if(strcmp(cmd, NICK) == 0) {
         handle_nick(client, clients_stack, strtok(NULL, " \t\r\n/"));
       }
@@ -31,6 +31,12 @@ void client_thread(Client *client) {
       }
       else if(strcmp(cmd, PART) == 0) {
         handle_part(client, channels);
+      }
+      else if(strcmp(cmd, PRIVMSG) == 0) {
+        char send_msg[MAXLINE];
+        strcpy(send_msg, &received_message[9]);
+        handle_privmsg(client, channels, send_msg);
+        break;
       }
       else {
         send_message(client, clients_stack, received_message);

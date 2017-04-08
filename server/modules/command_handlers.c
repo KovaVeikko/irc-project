@@ -69,6 +69,8 @@ void handle_join(Client *client, char *channel_name, Channel **channels) {
   strcat(message, channel -> name);
   server_message(client, message);
   free(message);
+  char *notification = "joined channel\n";
+  send_message(client, channel -> clients_stack, notification);
 }
 
 void handle_part(Client *client, Channel **channels) {
@@ -79,4 +81,16 @@ void handle_part(Client *client, Channel **channels) {
   }
   Channel *channel = get_or_create_channel(channels, client -> channel);
   part_client(channel, client);
+  char *notification = "left channel\n";
+  send_message(client, channel -> clients_stack, notification);
+}
+
+void handle_privmsg(Client *client, Channel **channels, char *message) {
+  if (strcmp(client -> channel, DEFAULT_CHANNEL) == 0) {
+    char *msg = "You have not joined any channel.";
+    server_message(client, msg);
+    return;
+  }
+  Channel *channel = get_or_create_channel(channels, client -> channel);
+  send_message(client, channel -> clients_stack, message);
 }

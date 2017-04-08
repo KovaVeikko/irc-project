@@ -9,5 +9,6 @@ void handle_user(Client *, char *);
 void handle_list(Channel **, Client *);
 void handle_join(Client *, char *, Channel **);
 void handle_part(Client *, Channel **);
+void handle_privmsg(Client *, Channel **, char *);
 
 #endif
