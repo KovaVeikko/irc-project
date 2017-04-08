@@ -35,40 +35,38 @@ void handle_nick(Client *client, Node *clients, char *name) {
   strcpy(client -> name, name);
 }
 
-void handle_list(Client *client) {
+void handle_list(Channel **channels, Client *client) {
   char *str = "Channels: \n";
-  char *br = "\n";
-  char *message = malloc(2048);
-  memset(message, 0, 2048);
+  char *message = malloc((strlen(str) + 1) * sizeof(char));
   strcat(message, str);
-  for(int i = 0; i < sizeof(CHANNELS) / sizeof(CHANNELS[0]); i++) {
-    strcat(message, CHANNELS[i]);
-    strcat(message, br);
-  }
+  message = get_channels_string(channels, message);
   server_message(client, message);
   free(message);
 };
 
-void handle_join(Client *client, Node *clients, char *channel) {
-  if (channel == NULL) {
+void handle_join(Client *client, char *channel_name, Channel **channels) {
+  if (channel_name == NULL) {
     char *error = "ERROR: No channel parameter given";
     server_message(client, error);
     return;
   }
-  if (strlen(channel) > 20) {
+  if (strlen(channel_name) > 20) {
     char *error = "ERROR: Channel name too long. Max 20 char.";
     server_message(client, error);
     return;
   }
+  if (strcmp(client -> channel, channel_name) == 0) {
+    char *msg = "You are already on that channel.";
+    server_message(client, msg);
+    return;
+  }
+  Channel *channel = get_or_create_channel(channels, channel_name);
+  join_client(channel, client);
+  char *message = malloc(0);
   char *str = "You are now on channel ";
-  char *mbr = ". Members are:";
-  char *message = malloc(strlen(str) + (strlen(channel) + strlen(mbr) + 1) * sizeof(char));
+  message = realloc(message, (strlen(str) + strlen(channel -> name) + 1) * sizeof(char));
   strcat(message, str);
-  strcat(message, channel);
-  strcat(message, mbr);
-  client -> channel = realloc(client -> channel, (strlen(channel) + 1) * sizeof(char));
-  strcpy(client -> channel, channel);
-  message = list_clients_on_channel(clients, channel, message);
+  strcat(message, channel -> name);
   server_message(client, message);
   free(message);
 }

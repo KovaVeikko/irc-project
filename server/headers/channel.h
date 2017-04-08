@@ -16,7 +16,9 @@ typedef struct Channel {
 Channel **new_channel_list();
 Channel *new_channel(char *);
 void add_channel(Channel **, Channel *);
-Channel *join_client(Channel *, Client *);
+void join_client(Channel *, Client *);
+Channel *get_or_create_channel(Channel **, char *);
+char *get_channels_string(Channel **, char *);
 
 
 #endif

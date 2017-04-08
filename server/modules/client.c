@@ -35,6 +35,15 @@ Node *add_client(Node *stack, const char *name, const char *hostname, const char
   return new_node;
 };
 
+int get_stack_length(Node *stack) {
+  int n = 0;
+  while (stack -> prev) {
+    n++;
+    stack = stack -> prev;
+  }
+  return n;
+}
+
 /* list all connected clients */
 int print_clients(Node *stack) {
   if (stack == NULL) {

@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
         clients_stack,
         DEFAULT_NAME,
         inet_ntop(AF_INET6, &cliaddr.sin6_addr, buff, sizeof(buff)),
-        channels[0] -> name,
+        DEFAULT_CHANNEL,
         connfd
       );
 

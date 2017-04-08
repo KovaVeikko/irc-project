@@ -28,8 +28,38 @@ void add_channel(Channel **channels, Channel *channel) {
 }
 
 /* joins a client to a channel */
-Channel *join_client(Channel *channel, Client *client) {
+void join_client(Channel *channel, Client *client) {
   Node *new_node = add_node(channel -> clients_stack);
   new_node -> content = client;
-  return channel;
+  channel -> clients_stack = new_node;
+  client -> channel = realloc(client -> channel, (strlen(channel -> name) + 1) * sizeof(char));
+  strcpy(client -> channel, channel -> name);
+}
+
+/* finds a channel with the given name or creates one if not existing */
+Channel *get_or_create_channel(Channel **channels, char *channel_name){
+  while (*channels) {
+    if (strcmp((*channels) -> name, channel_name) == 0) {
+      return *channels;
+    }
+    channels++;
+  }
+  Channel *new = new_channel(channel_name);
+  add_channel(channels, new);
+  return new;
+}
+
+/* get list of channels as a string */
+char *get_channels_string(Channel **channels, char *str) {
+  char *br = "\n";
+  char len[10 * sizeof(char)];
+  while (*channels) {
+    sprintf(len, " (%d)", get_stack_length((*channels) -> clients_stack));
+    str = realloc(str, (strlen(str) + strlen((*channels) -> name) + strlen(len) + strlen(br) + 1) * sizeof(char));
+    strcat(str, (*channels) -> name);
+    strcat(str, len);
+    strcat(str, br);
+    channels++;
+  }
+  return str;
 }
