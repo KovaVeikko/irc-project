@@ -4,10 +4,6 @@
 #include "../headers/command_handlers.h"
 #include "../headers/config.h"
 
-char CHANNELS[][20] = {"Cellari", "HappyGarden"};
-
-// Channel CHANNELS2[][sizeof(Channel)];
-
 void handle_user(Client *client, char *username) {
     if (username == NULL) {
       char *error = "ERROR: No username parameter given";
@@ -60,6 +56,10 @@ void handle_join(Client *client, char *channel_name, Channel **channels) {
     server_message(client, msg);
     return;
   }
+  if (strcmp(client -> channel, DEFAULT_CHANNEL) != 0) {
+    Channel *prev_channel = get_or_create_channel(channels, client -> channel);
+    part_client(prev_channel, client);
+  }
   Channel *channel = get_or_create_channel(channels, channel_name);
   join_client(channel, client);
   char *message = malloc(0);
@@ -69,4 +69,14 @@ void handle_join(Client *client, char *channel_name, Channel **channels) {
   strcat(message, channel -> name);
   server_message(client, message);
   free(message);
+}
+
+void handle_part(Client *client, Channel **channels) {
+  if (strcmp(client -> channel, DEFAULT_CHANNEL) == 0) {
+    char *msg = "You have not joined any channel.";
+    server_message(client, msg);
+    return;
+  }
+  Channel *channel = get_or_create_channel(channels, client -> channel);
+  part_client(channel, client);
 }

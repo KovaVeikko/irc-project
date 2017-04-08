@@ -8,5 +8,6 @@ void handle_nick(Client *, Node *, char *);
 void handle_user(Client *, char *);
 void handle_list(Channel **, Client *);
 void handle_join(Client *, char *, Channel **);
+void handle_part(Client *, Channel **);
 
 #endif

@@ -29,6 +29,9 @@ void client_thread(Client *client) {
       else if(strcmp(cmd, JOIN) == 0) {
         handle_join(client, strtok(NULL, " \t\r\n/"), channels);
       }
+      else if(strcmp(cmd, PART) == 0) {
+        handle_part(client, channels);
+      }
       else {
         send_message(client, clients_stack, received_message);
       }

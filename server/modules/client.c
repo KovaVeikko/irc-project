@@ -19,6 +19,23 @@ Node *add_node(Node *stack) {
   return new_node;
 }
 
+/* Removes Node from the stack */
+Node *remove_node(Node *node) {
+  Node *prev = node -> prev;
+  Node *next = node -> next;
+  Node *last;
+  if (prev != NULL) {
+    node -> prev -> next = node -> next;
+    last = node -> prev;
+  }
+  if (next != NULL) {
+    last = node -> next;
+    node -> next -> prev = node -> prev;
+  }
+  free(node);
+  return last;
+}
+
 /* Creates a new Client and adds to the stack */
 Node *add_client(Node *stack, const char *name, const char *hostname, const char *channel, int socket) {
   Node *new_node = add_node(stack);
