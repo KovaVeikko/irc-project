@@ -58,6 +58,8 @@ void handle_join(Client *client, char *channel_name, Channel **channels) {
   }
   if (strcmp(client -> channel, DEFAULT_CHANNEL) != 0) {
     Channel *prev_channel = get_or_create_channel(channels, client -> channel);
+    char *notification = "left channel\n";
+    send_message(client, prev_channel -> clients_stack, notification);
     part_client(prev_channel, client);
   }
   Channel *channel = get_or_create_channel(channels, channel_name);
@@ -80,9 +82,10 @@ void handle_part(Client *client, Channel **channels) {
     return;
   }
   Channel *channel = get_or_create_channel(channels, client -> channel);
-  part_client(channel, client);
   char *notification = "left channel\n";
   send_message(client, channel -> clients_stack, notification);
+  part_client(channel, client);
+  response_ok(client);
 }
 
 void handle_privmsg(Client *client, Channel **channels, char *message) {
@@ -93,4 +96,5 @@ void handle_privmsg(Client *client, Channel **channels, char *message) {
   }
   Channel *channel = get_or_create_channel(channels, client -> channel);
   send_message(client, channel -> clients_stack, message);
+  response_ok(client);
 }

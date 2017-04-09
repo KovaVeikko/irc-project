@@ -1,4 +1,5 @@
 #include "../headers/utility.h"
+#include "../headers/config.h"
 
 /*
 Send welcome message to client when connected
@@ -9,6 +10,14 @@ void welcome_message(Client *client) {
   strcat(line, str);
   write(client -> socket, line, strlen(line));
   free(line);
+}
+
+
+/*
+Inform client that the message was received successfully
+*/
+void response_ok(Client *client) {
+  write(client -> socket, RESPONSE_OK, strlen(RESPONSE_OK));
 }
 
 /*

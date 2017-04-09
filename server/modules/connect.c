@@ -16,7 +16,7 @@ void client_thread(Client *client) {
     msg = strcpy(msg, received_message);
     cmd = strtok(msg, " \t\r\n/");
     while(cmd != NULL) {
-      //printf("%s sent: \"%s\"\n", client -> name, cmd);
+      printf("%s sent: \"%s\"\n", client -> name, cmd);
       if(strcmp(cmd, NICK) == 0) {
         handle_nick(client, clients_stack, strtok(NULL, " \t\r\n/"));
       }
@@ -39,7 +39,8 @@ void client_thread(Client *client) {
         break;
       }
       else {
-        send_message(client, clients_stack, received_message);
+        char *send_msg = "unknown command";
+        server_message(client, send_msg);
       }
       cmd = strtok(NULL, " \t\r\n/");
     }

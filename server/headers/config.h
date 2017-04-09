@@ -8,4 +8,6 @@ extern int MAX_CHANNELS;
 extern char INITIAL_CHANNELS[][20];
 extern int LEN_INITIAL_CHANNELS;
 
+extern char *RESPONSE_OK;
+
 #endif
