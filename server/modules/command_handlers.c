@@ -23,7 +23,7 @@ void handle_nick(Client *client, Node *clients, char *name) {
   }
   char *str = "You are now known as ";
   char message[2000];
-  memset(message, 2000, 0);
+  memset(message, 0, 2000);
   strcat(message, str);
   strcat(message, name);
   server_message(client, message);
