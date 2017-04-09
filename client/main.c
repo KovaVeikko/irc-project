@@ -85,7 +85,6 @@ int main(int argc , char *argv[])
   for(;;){
 
       r_set = all_set;
-      //check to see if we can read from STDIN or sock
       select(maxfd, &r_set, NULL, NULL, &tv);
 
       if(FD_ISSET(STDIN_FILENO, &r_set)){
@@ -97,8 +96,7 @@ int main(int argc , char *argv[])
       }
 
       if(FD_ISSET(sockfd, &r_set)){
-        //Receive a reply from the server
-        memset(server_reply, 0, MAXLINE); // täytetään puskuri nollilla
+        memset(server_reply, 0, MAXLINE);
         if(read(sockfd, server_reply, MAXLINE) < 0) {
           printf("%s\n", "read failed");
         }
