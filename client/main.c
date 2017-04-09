@@ -89,34 +89,34 @@ int main(int argc , char *argv[])
   struct timeval tv; tv.tv_sec = 2; tv.tv_usec = 0;
 
   //keep communicating with server
-for(;;){
+  for(;;){
 
-    r_set = all_set;
-    //check to see if we can read from STDIN or sock
-    select(maxfd, &r_set, NULL, NULL, &tv);
+      r_set = all_set;
+      //check to see if we can read from STDIN or sock
+      select(maxfd, &r_set, NULL, NULL, &tv);
 
-    if(FD_ISSET(STDIN_FILENO, &r_set)){
-      fgets(send_message, MAXLINE, stdin);
-      if(write(sockfd, send_message, strlen(send_message)) < 0) {
-        printf("%s\n", "send failed");
-        return 1;
+      if(FD_ISSET(STDIN_FILENO, &r_set)){
+        fgets(send_message, MAXLINE, stdin);
+        if(write(sockfd, send_message, strlen(send_message)) < 0) {
+          printf("%s\n", "send failed");
+          return 1;
+        }
       }
-    }
 
-    if(FD_ISSET(sockfd, &r_set)){
-      //Receive a reply from the server
-      memset(server_reply, 0, MAXLINE); // täytetään puskuri nollilla
-      if(read(sockfd, server_reply, MAXLINE) < 0) {
-        printf("%s\n", "read failed");
+      if(FD_ISSET(sockfd, &r_set)){
+        //Receive a reply from the server
+        memset(server_reply, 0, MAXLINE); // täytetään puskuri nollilla
+        if(read(sockfd, server_reply, MAXLINE) < 0) {
+          printf("%s\n", "read failed");
+        }
+        server_reply[MAXLINE - 1] = 0;
+        if (strcmp(server_reply, RESPONSE_OK) == 0) {
+          continue;
+        } else {
+          fputs(server_reply, stdout);
+        }
       }
-      server_reply[MAXLINE - 1] = 0;
-      if (strcmp(server_reply, RESPONSE_OK) == 0) {
-        continue;
-      } else {
-        fputs(server_reply, stdout);
-      }
-    }
-}
+  }
 
   // for (;;) {
   //   // fgets(send_message, MAXLINE, stdin);

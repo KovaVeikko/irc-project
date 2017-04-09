@@ -22,11 +22,11 @@ void handle_nick(Client *client, Node *clients, char *name) {
     return;
   }
   char *str = "You are now known as ";
-  char *message = malloc(strlen(str) + strlen(name) + sizeof(char));
+  char message[2000];
+  memset(message, 2000, 0);
   strcat(message, str);
   strcat(message, name);
   server_message(client, message);
-  free(message);
   client -> name = realloc(client -> name, (strlen(name) + 1) * sizeof(char));
   strcpy(client -> name, name);
 }
@@ -85,7 +85,8 @@ void handle_part(Client *client, Channel **channels) {
   char *notification = "left channel\n";
   send_message(client, channel -> clients_stack, notification);
   part_client(channel, client);
-  response_ok(client);
+  char *msg = "Left channel";
+  server_message(client, msg);
 }
 
 void handle_privmsg(Client *client, Channel **channels, char *message) {

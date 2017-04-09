@@ -32,16 +32,16 @@ void client_thread(Client *client) {
       else if(strcmp(cmd, PART) == 0) {
         handle_part(client, channels);
       }
-      else if(strcmp(cmd, PRIVMSG) == 0) {
-        char send_msg[MAXLINE];
-        strcpy(send_msg, &received_message[9]);
-        handle_privmsg(client, channels, send_msg);
+      else {
+        // char send_msg[MAXLINE];
+        // strcpy(send_msg, &received_message[9]);
+        handle_privmsg(client, channels, received_message);
         break;
       }
-      else {
-        char *send_msg = "unknown command";
-        server_message(client, send_msg);
-      }
+      // else {
+      //   char *send_msg = "unknown command";
+      //   server_message(client, send_msg);
+      // }
       cmd = strtok(NULL, " \t\r\n/");
     }
     n = read(client -> socket, received_message, MAXLINE);
