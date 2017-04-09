@@ -6,7 +6,7 @@ Veikko Kovanen & Joona Karjula, 2017
 Tämä tietoliikenneprojekti sisältää C-kielellä ohjelmoidut asiakas- ja palvelinohjelmat, joiden avulla voidaan käydä reaaliaikaista tesktiviestintää internetissä usean yhtäaikaisen käyttäjän ryhmissä. Ohjelman käyttö perustuu IRC-protokollaan ja sitä käytetään UNIX-ympäristössä terminaali-ohjelmalla.
 
 ### 2. Toteutus ja rakenne
-Ohjelma sisältää erilliset ohjelmat palvelimelle ja asiakkaalle.
+Ohjelma sisältää erilliset ohjelmat palvelimelle (server) ja asiakkaalle (client).
 
 #### Palvelimen ohjelmamoduulit
 ##### main
@@ -33,7 +33,7 @@ config sisältää palvelimen asetuksia, kuten tervetuloa-viestin, oletusnimen, 
 
 #### Asiakkaan ohjelmamoduulit
 ##### main
-Asiakkaan main-funktio hakee ip-osoitteen annetulle DNS-nimelle ja yhdistää palvelimeen käyttäjän ilmoittamaan porttiin. Aluksi asiakasohjelma lähettää palvelimelle /USER-komennon, jolla se ilmoittaa käyttäjän nimen palvelimelle. Tämän jälkeen funktio kuuntelee ikuisessa silmukassa sekä käyttäjältä että palvelimelle avatusta pistokkeesta tulevaa io-virtaa. Käyttäjää ja palvelinta kuunnellaan vuorotellen Select()-funktion avulla, ja käyttäjän lähettämät viestit lähetetään palvelimelle avattuun pistokkeeseen.
+Asiakkaan main-funktio hakee ip-osoitteen annetulle DNS-nimelle ja yhdistää palvelimeen käyttäjän ilmoittamaan porttiin. Aluksi asiakasohjelma luo pistokkeen, joka käyttää IPv4 - protokollaa (AF_INET) ja TCP-protokollaa (SOCK_STREAM). Paluuarvo on pistokkeen tunniste, tai -1 jos luominen ei onnistunut. Sen jälkeen ohjelmalle kerrotaan, että osoiteperhe on IPv4 ja muutetaan IP -osoite binääriseksi. Asiaksohjelma ei siis tällähetkellä osaa käsitellä IPv6 osoitteita. Tässä vaiheessa ohjelma avaa TCP yhteyden palvelimeen ja lähettää virhearvon, jos yhteyttä ei saada muodostettua. Tämän jälkeen asiakasohjelma lähettää palvelimelle /USER-komennon, jolla se ilmoittaa käyttäjän nimen palvelimelle. Ilmoituksen jälkeen funktio kuuntelee ikuisessa silmukassa sekä käyttäjältä että palvelimelle avatusta pistokkeesta tulevaa io-virtaa. Käyttäjää sekä palvelinta kuunnellaan vuorotellen Select()-funktion avulla. Käyttäjän lähettämät viestit lähetetään palvelimelle avattuun pistokkeeseen tai pistokkeeseen tulleet viestit tulevat näkyviin käyttäjän näytölle. Ohjelma kuuntelee palvelinta siis niin kauan, kuin ohjelma suljetaan.
 
 ##### utility
 utility sisältää hostname_to_ip-funktion, joka tekee DNS-kyselyn ja muuttaa DNS-nimen ip-osoitteeksi.
@@ -59,6 +59,8 @@ Kun palvelin on käynnissä, asiakasohjelmalla voidaan ydistää palvelimeen. T�
 
 > <code>./main localhost 8000 Veikko</code>
 
+Jos osoite ei ole oikein määritetty, lähetetään virheviesti "Failed to get host by name". Tämä tarkoittaa sitä, että kyseistä osoitetta ei ole olemassa, koska IP -osoitetta ei saatu haettua. Jos taas portti on väärin, tulee käyttäjälle lukemaan "connect error: Connection refused". Tällöin IP -osoitteella ei ole pistoketta, joka kuuntelee tätä porttia.
+
 ##### 3.4. Keskustelu ohjelmassa
 Keskustelu ohjelmassa tapahtuu kanavilla (Channel). Kun asiakasohjelma on yhdistänyt palvelimelle, ohjelmaa käytetään seuraavien komentojen avulla:
 
@@ -70,7 +72,7 @@ Keskustelu ohjelmassa tapahtuu kanavilla (Channel). Kun asiakasohjelma on yhdist
 | /JOIN [kanava]    | Liittää käyttäjän kanavalle              |
 | /PART             | Poistaa käyttäjän nykyiseltä kanavaltaan |
 
-Kun käyttäjä on liittynyt kanavalle komennolla <code>/JOIN</code>, keskustelu tapahtuu kirjoittamalla viestin ja painamalla enteriä.
+Kun käyttäjä on liittynyt kanavalle komennolla <code>/JOIN</code>, keskustelu tapahtuu kirjoittamalla viestin ja painamalla enteriä. Viestit tulevat näkymään niin, että viestin edessä on nimimerkki, jolta viesti on saapunut. Käyttäjä erottaa omat viestinsä helposti, koska oman viestin edessä ei ole nimimerkkiä. Tähän olisi voinut laittaa myös näkymään asiakkaan oma nimimerkki, mutta päädyimme tähän, koska asiakas erottaa omat viestinsä näin helpommin. Asiakkaan nimimerkki näkyy kuitenkin toisille käyttäjille.
 
 ##### 3.5 Esimerkki asiakasohjelman käytöstä
 
@@ -119,17 +121,19 @@ Ohjelma perustuu IRC-protokollaan (<a href="https://tools.ietf.org/html/rfc1459"
 Ohjelma on testattu toimivaksi Ubuntu-käyttöjärjestelmässä käyttäen localhost-osoitetta.
 
 Seuraavat tilanteet on testattu:
-- asiakkaan liittyminen palvelimelle localhostissa
-- nimen vaihtaminen /NICK komennolla
-- kanavien listaus /LIST komennolla
-- olemassa olevalle kanavalle liittyminen /JOIN komennolla
-- kanavalta poistuminen /PART komennolla
-- uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
-- kolmen yhtäaikaisen asiakkaan keskustelu kanavalla
-- /PART komento kun ei olla millään kanavalla
+- Asiakkaan liittyminen palvelimelle localhostissa
+- Nimen vaihtaminen /NICK komennolla
+- Kanavien listaus /LIST komennolla
+- Olemassa olevalle kanavalle liittyminen
+- Uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
 - /JOIN komento kun ollaan jo kanavalla
-- viestin lähetys ku ei olla kanavalla
-- asiakkaan yhteyden katkaisu (palvelin pysyy toiminnassa)
+- Kanavalta poistuminen /PART komennolla
+- Viiden yhtäaikaisen asiakkaan keskustelu kanavalla
+- /PART komento kun ei olla millään kanavalla
+- Viestin lähetys kun ei olla kanavalla
+- Asiakkaan yhteyden katkaisu
+- Palvelimen sammuttaminen
+- Useiden kanavien ylläpito
 
 ### 6. Toiminta
 ##### Kuljetuskerroksen protokolla
@@ -139,10 +143,33 @@ Ohjelma käyttää kuljetuskerroksen protokollana TCP:tä. Tämä protokolla val
 Palvelinohjelma on tehty toimimaan myös IPv6-osoitteiden kanssa, mutta ei testattu ajanpuutteen vuoksi. Samasta syystä asiakasohjelmaan ei toteutettu tukea IPv6:lle.
 
 ##### Asiakkaan äkillinen yhteyden katkaisu
-Äkillisen asiakkaan poistumisen ei ole havaittu aiheuttavan ongelmia palvelimella. Testeissä palvelin on toiminut normaalisti ja siihen on voinut liittyä uudestaan, kun asiakasohjelma on sammutettu brute forcella.
+Äkillinen asiakkaan poistuminen palvelimelta aiheuttaa versiossamme palvelimen kaatumisen. Tätä testasimme sulkemalla asiakasohjelman brute forcella. Palvelin antaa lähettää vielä muutaman viestin jäljellä olevien asiakkaiden välillä, kunnes kaatuu. Tämä voi johtua siitä, että socket jää edelleen päälle ja palvelin yrittää syöttää sinne tavaraa siinä kuitenakaan onnistumatta.
 
 ##### Usean yhtäaikaisen asiakkaan liittyminen
 Palvelin tukee useaa samanaikaista käyttäjää, eikä monen yhtäaikaa tapahtuvan liittymisen pitäisi aiheuttaa ongelmia, koska sekä palvelin että asiakas odottavat riittävän kauan vastausta. Tätä ei ole kuitenkaan testattu kuin muutamalla n. sekunnin sisään liitetyllä asiakkaalla.
+
+
+##### Komennot
+Komennot (/NICK, /LIST, /PART, /JOIN) pitää kirjoittaa isolla, jotta. Nimen vaihtaminen onnistuu useaan kertaan.
+- Kanavien listaus /LIST komennolla
+  - Komennot pitää kirjoittaa isolla. Listaaminen onnistuu vaivattomasti ja ilmoittaa kaikki valmiiksi luodut kanavat, sekä kanavalla olevien asiakkaiden lukumäärän.
+- Olemassa olevalle kanavalle liittyminen, Uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
+  - Komennolla joko liitytään tai perustetaan ja liitytään kanavalle.
+- Kanavalta poistuminen /PART komennolla
+  - /PART ei vielä poista muodostettua kanavaa, mutta poistaa käyttäjän kyseiseltä kanavalta.
+- Viiden yhtäaikaisen asiakkaan keskustelu kanavalla
+  - Käyttäjien lisääminen onnistuu vaivattomasti ja pystyy käsittelemään useampia käyttäjiä. Tätä testattu enimmillään viidellä käyttäjällä yhtäaikaa.
+- /PART komento kun ei olla millään kanavalla
+  - Käyttäjä saa viestin, jossa hänelle kerrotaan, ettei hän ole liittynyt yhteenkään kanavaan.
+- /JOIN komento kun ollaan jo kanavalla
+  - Käyttäjä siirtyy uudelle määritetylle kanavalle
+- Viestin lähetys kun ei olla kanavalla
+  - Käyttäjä saa viestin, jossa hänelle kerrotaan, ettei hän ole liittynyt yhteenkään kanavaan.
+- asiakkaan yhteyden katkaisu
+  - Palvelin ei valitettavasti kykene tällähetkellä käsittelemään tilannetta, jossa asiakas sulkee yhteyden.
+- Palvelimen sammuttaminen
+- Useiden kanavien ylläpito
+  - Palvelin pystyy välittämään viestejä asikkaiden välillä usealla kanavalla samanaikaisesti
 
 
 ### 7. Puutteet
