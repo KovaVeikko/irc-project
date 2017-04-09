@@ -124,9 +124,9 @@ Seuraavat tilanteet on testattu:
 - Asiakkaan liittyminen palvelimelle localhostissa
 - Nimen vaihtaminen /NICK komennolla
 - Kanavien listaus /LIST komennolla
-- Olemassa olevalle kanavalle liittyminen
+- Olemassa olevalle kanavalle liittyminen /JOIN komennolla
 - Uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
-- /JOIN komento kun ollaan jo kanavalla
+- /JOIN komento kun ollaan jo kanavalla, eli vaihdetaan kanavaa
 - Kanavalta poistuminen /PART komennolla
 - Viiden yhtäaikaisen asiakkaan keskustelu kanavalla
 - /PART komento kun ei olla millään kanavalla
@@ -148,29 +148,14 @@ Palvelinohjelma on tehty toimimaan myös IPv6-osoitteiden kanssa, mutta ei testa
 ##### Usean yhtäaikaisen asiakkaan liittyminen
 Palvelin tukee useaa samanaikaista käyttäjää, eikä monen yhtäaikaa tapahtuvan liittymisen pitäisi aiheuttaa ongelmia, koska sekä palvelin että asiakas odottavat riittävän kauan vastausta. Tätä ei ole kuitenkaan testattu kuin muutamalla n. sekunnin sisään liitetyllä asiakkaalla.
 
+##### Usean yhtäaikaisen asiakkaan keskustelu
+Palvelin pystyy käsittelemään useaa yhtäaikaista asiakasta. Tämän testasimme viidellä käyttäjällä, erilaisissa tilanteissa. Esimerkiksi asiakkaat pystyivät toteuttamaan kommunikointia myös usealla eri kanavalla virheettömästi.
 
 ##### Komennot
-Komennot (/NICK, /LIST, /PART, /JOIN) pitää kirjoittaa isolla, jotta. Nimen vaihtaminen onnistuu useaan kertaan.
-- Kanavien listaus /LIST komennolla
-  - Komennot pitää kirjoittaa isolla. Listaaminen onnistuu vaivattomasti ja ilmoittaa kaikki valmiiksi luodut kanavat, sekä kanavalla olevien asiakkaiden lukumäärän.
-- Olemassa olevalle kanavalle liittyminen, Uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
-  - Komennolla joko liitytään tai perustetaan ja liitytään kanavalle.
-- Kanavalta poistuminen /PART komennolla
-  - /PART ei vielä poista muodostettua kanavaa, mutta poistaa käyttäjän kyseiseltä kanavalta.
-- Viiden yhtäaikaisen asiakkaan keskustelu kanavalla
-  - Käyttäjien lisääminen onnistuu vaivattomasti ja pystyy käsittelemään useampia käyttäjiä. Tätä testattu enimmillään viidellä käyttäjällä yhtäaikaa.
-- /PART komento kun ei olla millään kanavalla
-  - Käyttäjä saa viestin, jossa hänelle kerrotaan, ettei hän ole liittynyt yhteenkään kanavaan.
-- /JOIN komento kun ollaan jo kanavalla
-  - Käyttäjä siirtyy uudelle määritetylle kanavalle
-- Viestin lähetys kun ei olla kanavalla
-  - Käyttäjä saa viestin, jossa hänelle kerrotaan, ettei hän ole liittynyt yhteenkään kanavaan.
-- asiakkaan yhteyden katkaisu
-  - Palvelin ei valitettavasti kykene tällähetkellä käsittelemään tilannetta, jossa asiakas sulkee yhteyden.
-- Palvelimen sammuttaminen
-- Useiden kanavien ylläpito
-  - Palvelin pystyy välittämään viestejä asikkaiden välillä usealla kanavalla samanaikaisesti
+Komennot (/NICK, /LIST, /PART, /JOIN) pitää kirjoittaa isolla, jotta komennot toimivat. Muuten ohjelma luulee, että asiakas syöttää viestiä ja käyttäytyy sen mukaan. Nimeä käyttäjä voi vaihtaa mielivaltaisesti. /LIST komento antaa myös kanavalla olevien käyttäjien lukumäärän. Jos käyttäjä ei ole millään kanavalla, /PART komento ja asiakkaan muut komennot (jotka ei lueteltu) ilmoittaa, ilmoittavat käyttäjälle tämän.
 
+##### Virheiden testaaminen
+Virheitä testasimme erilaisin keinoin askel kerrallaan. Esimerkiksi asiakan testaamiseen kirjoitimme vääriä tietoja (esim. osoite tai portti) sekä "leikimme" serverillä.
 
 ### 7. Puutteet
 Ohjelma jäi joiltakin osin keskeneräiseksi ja siihen jäi bugeja, joita ei ehditty korjaamaan. Syynä tähän on tiukka aikataulu ja allekirjoittaneiden kokemattomuus C-ohjelmoinnissa. Tunnistetut puutteet on listattu alla.
@@ -179,9 +164,12 @@ Ohjelma jäi joiltakin osin keskeneräiseksi ja siihen jäi bugeja, joita ei ehd
 | Puute             | Kuvaus                                   |
 | ------------------| -----------------------------------------|
 | accept() bugi     | Joskus asiakkaan käynnistämienn aiheuttaa palvelimen kaatumisen accept()-funktioon, joka päättyy virheeseen "Invalid argument"|
-| muistivuodot      | Ohjelma sisältää jonkin verran dynaamiseen muistinvaraukseen liittyviä muistivuotoja |
-| käytettävyys      | Asiakasohjelman käytettävyys on hankalaa |
-| asiakkaan poistuminen | Asiakkaan poistumiseen palvelimelta ei ole toteutettu fuktiota, eli asiakasta ei poisteta palvelimen tiedoista vaikka yhteys katkeaisi|
-| tyhjät kanavat    | tyhjien kanavien poistamiseen ei ole toteutettu funktiota |
+| Muistivuodot      | Ohjelma sisältää jonkin verran dynaamiseen muistinvaraukseen liittyviä muistivuotoja |
+| Käytettävyys      | Asiakasohjelman käytettävyys on hankalaa |
+| Asiakkaan poistuminen | Asiakkaan poistumiseen palvelimelta ei ole toteutettu funktiota, eli asiakasta ei poisteta palvelimen tiedoista vaikka yhteys katkeaisi. Serveri ei myöskään pysty tällä hetkellä käsittelemään tilannetta vaan kaatuu |
+| Tyhjät kanavat    | tyhjien kanavien poistamiseen ei ole toteutettu funktiota |
+| Kanavan poisto    | Uudet kanavat jäävät taustalle "pyörimään". Eli jos perustetulla kanavalla ei ole enää yhtään asiakasta, jää se silti näkymään kanavien listaukseen |
+| Palvelimen sulkeminen  | Asiakas ei saa erillistä viestiä, jos palvelin kaatuu tai sulkeutuu yllättäen |
+| IPv6 -osoitteet  | Ohjelma ei toistaiseksi tue, kuin IPv4 -osoitteita. Tämän saisi ratkaistua komennolla, joka selvittäisi onko kyseessä IPv4 vai IPv6 -osoite ja käyttäisi yhteyden muodostamiseen sen vaatimaa protokollaa. Nyt oletetaan vain käytettävän IPv4 -osoitteita. |
 
-Vaikka projekti jäi monilta osin keskeneräisiksi, keskeiset toiminnot, eli asiakkaan liittyminen palvelimelle ja keskustelu muiden asiakkaiden kassa pitäisi kuitenkin toimia.
+Vaikka projekti jäi monilta osin keskeneräisiksi, keskeiset toiminnot, eli usean asiakkaan liittyminen palvelimelle sekä keskustelu muiden asiakkaiden kanssa pitäisi toimia vaivattomasti.
