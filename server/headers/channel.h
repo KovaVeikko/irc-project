@@ -21,6 +21,7 @@ void part_client(Channel *, Client *);
 Node *find_client_node_in_channel(Channel *, Client *);
 Channel *get_or_create_channel(Channel **, char *);
 char *get_channels_string(Channel **, char *);
+char *get_members_string(Channel *, char *);
 
 
 #endif

@@ -88,3 +88,19 @@ char *get_channels_string(Channel **channels, char *str) {
   }
   return str;
 }
+
+/* get list of members on a channel as a string */
+char *get_members_string(Channel *channel, char *str) {
+  char *prefix = "members are:\n";
+  char *br = "\n";
+  Node *node = channel -> clients_stack;
+  str = realloc(str, (strlen(prefix) + 1) * sizeof(char));
+  strcpy(str, prefix);
+  while (node -> prev) {
+    str = realloc(str, (strlen(str) + strlen(br) + strlen(node -> content -> name) + 1) * sizeof(char));
+    strcat(str, node -> content -> name);
+    strcat(str, br);
+    node = node -> prev;
+  }
+  return str;
+}

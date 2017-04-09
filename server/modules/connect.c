@@ -33,8 +33,6 @@ void client_thread(Client *client) {
         handle_part(client, channels);
       }
       else {
-        // char send_msg[MAXLINE];
-        // strcpy(send_msg, &received_message[9]);
         handle_privmsg(client, channels, received_message);
         break;
       }

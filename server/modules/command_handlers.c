@@ -71,6 +71,10 @@ void handle_join(Client *client, char *channel_name, Channel **channels) {
   strcat(message, channel -> name);
   server_message(client, message);
   free(message);
+  char *members = malloc(0);
+  get_members_string(channel, members);
+  server_message(client, members);
+  free(members);
   char *notification = "joined channel\n";
   send_message(client, channel -> clients_stack, notification);
 }
