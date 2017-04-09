@@ -14,9 +14,6 @@
 
 #define MAXLINE 1000
 
-#define COMPLETE 0
-#define BUF_SIZE 256
-
 int main(int argc , char *argv[])
 {
 
@@ -39,19 +36,15 @@ int main(int argc , char *argv[])
     return -1;
   };
 
-  // Rakenna sockaddr - rakenne. Muista esitellä vastaava muuttuja.
-  // Voit ottaa esimerkkiä edellisestä ohjelmasta
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port   = htons(port);
 
-  // Muutetaan ASCII ip binääriseksi ja tallennetaan sercaddr-rakenteeseen
   if (inet_pton(AF_INET, address, &servaddr.sin_addr) <= 0) {
       printf("inet_pton error for");
       return 1;
   }
 
-  // Avaa yhteys palvelimeen. Muista tarkistaa paluuarvosta onnistuiko.
   if (connect(sockfd,
               (struct sockaddr *) &servaddr,
               sizeof(servaddr)) < 0) {
@@ -117,33 +110,4 @@ int main(int argc , char *argv[])
         }
       }
   }
-
-  // for (;;) {
-  //   // fgets(send_message, MAXLINE, stdin);
-  //
-  //   // printf("Send message:");
-  //   memset(send_message, 0, MAXLINE);
-  //
-  //   fgets(send_message, MAXLINE, stdin);
-  //   // Lähetä annettu merkkijono
-  //   if(write(sockfd, send_message, strlen(send_message)) < 0) {
-  //     printf("%s\n", "send failed");
-  //     return 1;
-  //   }
-  //
-  //   memset(server_reply, 0, MAXLINE); // täytetään puskuri nollilla
-  //
-  //   // Lue palvelimen vastaus yllä määriteltyyn puskuriin
-  //   if(read(sockfd, server_reply, MAXLINE) < 0) {
-  //       printf("%s\n", "read failed");
-  //   }
-  //
-  //   server_reply[MAXLINE - 1] = 0;  // varmistetaan että lopussa on nolla
-  //
-  //   if (strcmp(server_reply, RESPONSE_OK) == 0) {
-  //     continue;
-  //   }
-  //   fputs(server_reply, stdout);  // tulostetaan luettu teksti ruudulle
-  // }
-
 }
