@@ -31,11 +31,13 @@ config sisältää palvelimen asetuksia, kuten tervetuloa-viestin, oletusnimen, 
 
 #### Asiakkaan ohjelmamoduulit
 ##### main
+Asiakkaan main-funktio hakee ip-osoitteen annetulle DNS-nimelle ja yhdistää palvelimeen käyttäjän ilmoittamaan porttiin. Aluksi asiakasohjelma lähettää palvelimelle /USER-komennon, jolla se ilmoittaa käyttäjän nimen palvelimelle. Tämän jälkeen funktio kuuntelee ikuisessa silmukassa sekä käyttäjältä että palvelimelle avatusta pistokkeesta tulevaa io-virtaa. Käyttäjää ja palvelinta kuunnellaan vuorotellen Select()-funktion avulla, ja käyttäjän lähettämät viestit lähetetään palvelimelle avattuun pistokkeeseen.
 
+##### utility
+utility sisältää hostname_to_ip-funktion, joka tekee DNS-kyselyn ja muuttaa DNS-nimen ip-osoitteeksi.
 
-
-- TCP kommunikaatio
-- useamman threadin socket
+##### config
+config sisältää asiakasohjelman asetuksia.
 
 ### 3. Käyttöohjeet
 ##### 3.1. Käännä C-tiedostot
@@ -103,7 +105,54 @@ Joona: no moi!
 ```
 
 ### 4. Protokolla
+Ohjelma perustuu IRC-protokollaan (<a href="https://tools.ietf.org/html/rfc1459">RFC 1459</a>), joskin toteuttaa vain pienen osan siitä.
+
+- Ohjelmassa käytettävät komennot (ks. 3.4) ovat vastaavat kuin IRC:ssa, mutta eivät kaikilta osin vastaa protokollassa määriteltyä toiminnallisuutta. Suurinta osaa IRC:ssa määritellyistä komennoista ei ole sisällytetty tähän ohjelmaan. Ohjelmassa ei muun muassa ole toimintoa yksityisviestien lähettämiseen asiakkaalta asiakkaalle.
+
+- Ohjelmassa on toteutettu asiakkaalta palvelimelle viestintä sekä palvelimelta asiakkaille viestintä samalla ajatuksella kuin IRC:ssa, mutta toimintoja on yksinkertaistettu. Esimerkiksi asiakasohjelman lähettämät tiedot palvelimelle rekisteröityessä eivät sisällä kaikkia protokollassa määriteltyjä tietoja. Lisäksi palvelimelle liitytään suoraan ohjelman käynnistyessä ilman CONNECT/ komentoa.
+
+- Kanavat ovat yksikertaistuksia IRC:n kanavista, eivätkä sisällä mm. kuvausta tai ylläpitäjiä. Myöskään palvelimesta tai käyttäjistä ei ole saatavilla yhtä kattavia tietoja kuin IRC:ssa.
 
 ### 5. Testaus
+Ohjelma on testattu toimivaksi Ubuntu-käyttöjärjestelmässä käyttäen localhost-osoitetta.
+
+Seuraavat tilanteet on testattu:
+- asiakkaan liittyminen palvelimelle localhostissa
+- nimen vaihtaminen /NICK komennolla
+- kanavien listaus /LIST komennolla
+- olemassa olevalle kanavalle liittyminen /JOIN komennolla
+- kanavalta poistuminen /PART komennolla
+- uuden kanavan perustaminen ja sille liittyminen /JOIN komennolla
+- kolmen yhtäaikaisen asiakkaan keskustelu kanavalla
+- /PART komento kun ei olla millään kanavalla
+- /JOIN komento kun ollaan jo kanavalla
+- viestin lähetys ku ei olla kanavalla
+- asiakkaan yhteyden katkaisu (palvelin pysyy toiminnassa)
 
 ### 6. Toiminta
+##### Kuljetuskerroksen protokolla
+Ohjelma käyttää kuljetuskerroksen protokollana TCP:tä. Tämä protokolla valittiin ensisijaisesti siksi, että se on yleisesti käytössä oleva protokolla vastaavissa sovelluksissa. Tämän ohjelman tapauksessa TCP:n etu erityisesti UDP:hen verrattuna on, että TCP takaa luotettavan kommunikaation, eli viestit menevät läpi kokonaisina, vaikka väliaikaisia kommunikaatiohäiriöitä ilmenisi. Toisaalta mahdollisista häiriöistä aiheutuvat viiveet, joita UDP:n tapauksessa ei olisi, eivät ole tämän ohjelman toiminnan kannalta merkityksellisiä.
+
+##### IPv6 yhteensopivuus
+Palvelinohjelma on tehty toimimaan myös IPv6-osoitteiden kanssa, mutta ei testattu ajanpuutteen vuoksi. Samasta syystä asiakasohjelmaan ei toteutettu tukea IPv6:lle.
+
+##### Asiakkaan äkillinen yhteyden katkaisu
+Äkillisen asiakkaan poistumisen ei ole havaittu aiheuttavan ongelmia palvelimella. Testeissä palvelin on toiminut normaalisti ja siihen on voinut liittyä uudestaan, kun asiakasohjelma on sammutettu brute forcella.
+
+##### Usean yhtäaikaisen asiakkaan liittyminen
+Palvelin tukee useaa samanaikaista käyttäjää, eikä monen yhtäaikaa tapahtuvan liittymisen pitäisi aiheuttaa ongelmia, koska sekä palvelin että asiakas odottavat riittävän kauan vastausta. Tätä ei ole kuitenkaan testattu kuin muutamalla n. sekunnin sisään liitetyllä asiakkaalla.
+
+
+### 7. Puutteet
+Ohjelma jäi joiltakin osin keskeneräiseksi ja siihen jäi bugeja, joita ei ehditty korjaamaan. Syynä tähän on tiukka aikataulu ja allekirjoittaneiden kokemattomuus C-ohjelmoinnissa. Tunnistetut puutteet on listattu alla.
+
+
+| Puute             | Kuvaus                                   |
+| ------------------| -----------------------------------------|
+| accept() bugi     | Joskus asiakkaan käynnistämienn aiheuttaa palvelimen kaatumisen accept()-funktioon, joka päättyy virheeseen "Invalid argument"|
+| muistivuodot      | Ohjelma sisältää jonkin verran dynaamiseen muistinvaraukseen liittyviä muistivuotoja |
+| käytettävyys      | Asiakasohjelman käytettävyys on hankalaa |
+| asiakkaan poistuminen | Asiakkaan poistumiseen palvelimelta ei ole toteutettu fuktiota, eli asiakasta ei poisteta palvelimen tiedoista vaikka yhteys katkeaisi|
+| tyhjät kanavat    | tyhjien kanavien poistamiseen ei ole toteutettu funktiota |
+
+Vaikka projekti jäi monilta osin keskeneräisiksi, keskeiset toiminnot, eli asiakkaan liittyminen palvelimelle ja keskustelu muiden asiakkaiden kassa pitäisi kuitenkin toimia.
