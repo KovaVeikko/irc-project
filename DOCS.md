@@ -1,5 +1,7 @@
 # Tietoliikenneprojekti - dokumentaatio
 
+Veikko Kovanen & Joona Karjula, 2017
+
 ### 1. Johdanto
 Tämä tietoliikenneprojekti sisältää C-kielellä ohjelmoidut asiakas- ja palvelinohjelmat, joiden avulla voidaan käydä reaaliaikaista tesktiviestintää internetissä usean yhtäaikaisen käyttäjän ryhmissä. Ohjelman käyttö perustuu IRC-protokollaan ja sitä käytetään UNIX-ympäristössä terminaali-ohjelmalla.
 
